@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}FinTrc{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { background-color: #f8f9fa; }
+
+    /* Боковая панель */
+    .sidebar {
+      min-height: 100vh;
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #dee2e6;
+      position: fixed;
+      top: 0; left: 0;
+    }
+    .sidebar .nav-link {
+      color: #495057;
+      border-radius: 8px;
+      margin: 2px 8px;
+      padding: 10px 14px;
+    }
+    .sidebar .nav-link:hover    { background: #f1f3f5; color: #212529; }
+    .sidebar .nav-link.active   { background: #e8f5e9; color: #2e7d32; font-weight: 600; }
+    .sidebar .nav-link .bi      { width: 20px; }
+
+    /* Основной контент */
+    .main { margin-left: 220px; padding: 30px; }
+
+    /* Карточки статистики */
+    .stat-card { border-left: 4px solid; }
+    .stat-balance { border-left-color: #f59e0b; }
+    .stat-income  { border-left-color: #22c55e; }
+    .stat-expense { border-left-color: #ef4444; }
+
+    /* Цвет суммы в таблице */
+    .text-income  { color: #16a34a; font-weight: 600; }
+    .text-expense { color: #dc2626; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+{% if session.user_id %}
+<!-- ── БОКОВАЯ ПАНЕЛЬ ── -->
+<aside class="sidebar d-flex flex-column p-3">
+  <div class="mb-4 px-2">
+    <span class="fs-4 fw-bold text-success">₽ FinTrc</span>
+    <div class="text-muted small">{{ session.username }}</div>
+  </div>
+
+  <nav class="nav flex-column flex-grow-1">
+    <a href="{{ url_for('overview') }}"
+       class="nav-link {% if request.endpoint == 'overview' %}active{% endif %}">
+      <i class="bi bi-grid me-2"></i>Обзор
+    </a>
+    <a href="{{ url_for('add') }}"
+       class="nav-link {% if request.endpoint == 'add' %}active{% endif %}">
+      <i class="bi bi-plus-circle me-2"></i>Добавить
+    </a>
+    <a href="{{ url_for('history') }}"
+       class="nav-link {% if request.endpoint == 'history' %}active{% endif %}">
+      <i class="bi bi-list-ul me-2"></i>История
+    </a>
+    <a href="{{ url_for('edit') }}"
+       class="nav-link {% if request.endpoint == 'edit' %}active{% endif %}">
+      <i class="bi bi-pencil me-2"></i>Редактировать
+    </a>
+    <a href="{{ url_for('converter') }}"
+       class="nav-link {% if request.endpoint == 'converter' %}active{% endif %}">
+      <i class="bi bi-currency-exchange me-2"></i>Конвертер
+    </a>
+  </nav>
+
+  <div class="border-top pt-3 mt-auto">
+    <a href="{{ url_for('export_csv') }}" class="nav-link text-muted">
+      <i class="bi bi-download me-2"></i>Экспорт CSV
+    </a>
+    <a href="{{ url_for('logout') }}" class="nav-link text-danger">
+      <i class="bi bi-box-arrow-right me-2"></i>Выйти
+    </a>
+  </div>
+</aside>
+
+<!-- ── ОСНОВНОЙ КОНТЕНТ ── -->
+<main class="main">
+  <!-- Флеш-сообщения -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+{% else %}
+<!-- ── СТРАНИЦА БЕЗ АВТОРИЗАЦИИ ── -->
+<main class="container py-5">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  {% block auth_content %}{% endblock %}
+</main>
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

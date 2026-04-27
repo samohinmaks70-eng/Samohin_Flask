@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Конвертер — FinTrc{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Конвертер валют</h4>
+
+<div class="card shadow-sm" style="max-width: 480px;">
+  <div class="card-body p-4">
+
+    <form method="POST" action="{{ url_for('converter') }}">
+
+      <!-- Сумма -->
+      <div class="mb-3">
+        <label class="form-label">Сумма</label>
+        <input type="number" name="amount" class="form-control"
+               placeholder="100" value="{{ amount }}" min="0.01" step="any" required>
+      </div>
+
+      <!-- Из какой валюты -->
+      <div class="mb-3">
+        <label class="form-label">Из</label>
+        <select name="from_curr" class="form-select">
+          {% for cur in currencies %}
+            <option value="{{ cur }}" {% if cur == from_curr %}selected{% endif %}>
+              {{ cur }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- В какую валюту -->
+      <div class="mb-4">
+        <label class="form-label">В</label>
+        <select name="to_curr" class="form-select">
+          {% for cur in currencies %}
+            <option value="{{ cur }}" {% if cur == to_curr %}selected{% endif %}>
+              {{ cur }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">
+        <i class="bi bi-currency-exchange me-1"></i>Конвертировать
+      </button>
+    </form>
+
+    <!-- Результат -->
+    {% if result %}
+    <div class="alert alert-success mt-4 text-center fs-5 fw-semibold mb-0">
+      {{ result }}
+    </div>
+    {% endif %}
+
+    <!-- Ошибка -->
+    {% if error %}
+    <div class="alert alert-danger mt-4 mb-0">
+      <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<p class="text-muted small mt-3">
+  <i class="bi bi-info-circle me-1"></i>
+  Курсы загружаются с <a href="https://api.exchangerate-api.com" target="_blank">exchangerate-api.com</a>
+  при каждом запросе.
+</p>
+
+{% endblock %}

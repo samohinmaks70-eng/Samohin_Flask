@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Добавить — FinTrc{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Добавить транзакцию</h4>
+
+<div class="card shadow-sm" style="max-width: 520px;">
+  <div class="card-body p-4">
+    <form method="POST" action="{{ url_for('add') }}">
+
+      <!-- Дата -->
+      <div class="mb-3">
+        <label class="form-label">Дата</label>
+        <input type="date" name="date" class="form-control"
+               value="{{ today }}" required>
+      </div>
+
+      <!-- Сумма -->
+      <div class="mb-3">
+        <label class="form-label">Сумма (₽)</label>
+        <input type="number" name="amount" class="form-control"
+               placeholder="0.00" min="0.01" step="0.01" required>
+      </div>
+
+      <!-- Тип — при изменении отправляет форму GET чтобы обновить категории -->
+      <div class="mb-3">
+        <label class="form-label">Тип</label>
+        <select name="type" class="form-select"
+                onchange="this.form.method='get'; this.form.action='{{ url_for('add') }}'; this.form.submit()">
+          <option value="income"  {% if selected_type == 'income'  %}selected{% endif %}>Доход</option>
+          <option value="expense" {% if selected_type == 'expense' %}selected{% endif %}>Расход</option>
+        </select>
+      </div>
+
+      <!-- Категория (зависит от типа) -->
+      <div class="mb-3">
+        <label class="form-label">Категория</label>
+        <select name="category" class="form-select">
+          {% for cat in categories %}
+            <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Описание -->
+      <div class="mb-4">
+        <label class="form-label">
+          Описание <span class="text-muted fw-normal">(необязательно)</span>
+        </label>
+        <input type="text" name="description" class="form-control"
+               placeholder="Заметка к транзакции">
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">
+        <i class="bi bi-plus-circle me-1"></i>Добавить
+      </button>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
